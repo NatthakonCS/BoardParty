@@ -1,7 +1,7 @@
 // =============================================
 //  HELPER FUNCTIONS (ใช้ร่วมกัน)
 // =============================================
-function shuffleArray<T>(array: T[]): T[] {
+function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -14,27 +14,27 @@ function shuffleArray<T>(array: T[]): T[] {
 // =============================================
 const WerewolfGame = {
   // 1. State
-  roles: [] as string[],
+  roles: [],
   currentPlayerIndex: 0,
 
   // 2. DOM Elements
-  container: document.getElementById('werewolfGameContainer')!,
-  setupScreen: document.getElementById('ww-setupScreen')!,
-  assignScreen: document.getElementById('ww-assignScreen')!,
-  revealScreen: document.getElementById('ww-revealScreen')!,
+  container: document.getElementById('werewolfGameContainer'),
+  setupScreen: document.getElementById('ww-setupScreen'),
+  assignScreen: document.getElementById('ww-assignScreen'),
+  revealScreen: document.getElementById('ww-revealScreen'),
 
-  rolesTextarea: document.getElementById('ww-rolesTextarea') as HTMLTextAreaElement,
-  playerCountText: document.getElementById('ww-playerCount')!,
-  startButton: document.getElementById('ww-startButton')!,
+  rolesTextarea: document.getElementById('ww-rolesTextarea'),
+  playerCountText: document.getElementById('ww-playerCount'),
+  startButton: document.getElementById('ww-startButton'),
 
-  playerTurnText: document.getElementById('ww-playerTurnText')!,
-  revealButton: document.getElementById('ww-revealButton')!,
+  playerTurnText: document.getElementById('ww-playerTurnText'),
+  revealButton: document.getElementById('ww-revealButton'),
 
-  roleDisplay: document.getElementById('ww-roleDisplay')!,
-  nextPlayerButton: document.getElementById('ww-nextPlayerButton')!,
+  roleDisplay: document.getElementById('ww-roleDisplay'),
+  nextPlayerButton: document.getElementById('ww-nextPlayerButton'),
 
   // 3. Methods
-  showScreen(screenId: 'setup' | 'assign' | 'reveal') {
+  showScreen(screenId) {
     this.setupScreen.classList.add('hidden');
     this.assignScreen.classList.add('hidden');
     this.revealScreen.classList.add('hidden');
@@ -70,7 +70,6 @@ const WerewolfGame = {
       this.showScreen('assign');
     } else {
       alert("ทุกคนได้รับบทบาทครบแล้ว! เริ่มเกมได้");
-      // เมื่อจบเกม ให้กลับไปหน้า setup ของ WW
       this.resetGame();
     }
   },
@@ -86,7 +85,7 @@ const WerewolfGame = {
     this.playerCountText.innerText = 'จำนวนผู้เล่น: 0';
     this.roles = [];
     this.currentPlayerIndex = 0;
-    this.showScreen('setup'); // กลับไปหน้าตั้งค่าของตัวเอง
+    this.showScreen('setup');
   },
 
   // 4. Initialize (เชื่อมปุ่ม)
@@ -109,41 +108,41 @@ const SpyfallGame = {
     { name: "คณะละครสัตว์", roles: ["ตัวตลก", "นักกายกรรม", "ผู้ควบคุมสิงโต", "นักมายากล", "ผู้ชม"] },
     // ... (เพิ่มอีก 17 สถานที่จากโค้ดเดิม) ...
     { name: "ธนาคาร", roles: ["ผู้จัดการ", "พนักงานเคาน์เตอร์", "ยาม", "ลูกค้า", "โจร"] }
-  ] as { name: string, roles: string[] }[],
+  ],
 
   playerCount: 3,
   spyCount: 1,
-  currentLocation: null as { name: string, roles: string[] } | null,
-  allRoles: [] as string[],
+  currentLocation: null,
+  allRoles: [],
   currentPlayerIndex: 0,
   timeRemaining: 0,
-  timerInterval: undefined as number | undefined,
+  timerInterval: undefined,
 
   // 2. DOM Elements
-  container: document.getElementById('spyfallGameContainer')!,
-  setupScreen: document.getElementById('sf-setupScreen')!,
-  assignScreen: document.getElementById('sf-assignScreen')!,
-  revealScreen: document.getElementById('sf-revealScreen')!,
-  timerScreen: document.getElementById('sf-timerScreen')!,
+  container: document.getElementById('spyfallGameContainer'),
+  setupScreen: document.getElementById('sf-setupScreen'),
+  assignScreen: document.getElementById('sf-assignScreen'),
+  revealScreen: document.getElementById('sf-revealScreen'),
+  timerScreen: document.getElementById('sf-timerScreen'),
 
-  playerCountSelect: document.getElementById('sf-playerCountSelect') as HTMLSelectElement,
-  spyCountButtons: document.getElementById('sf-spyCountButtons')!,
-  startGameButton: document.getElementById('sf-startGameButton')!,
+  playerCountSelect: document.getElementById('sf-playerCountSelect'),
+  spyCountButtons: document.getElementById('sf-spyCountButtons'),
+  startGameButton: document.getElementById('sf-startGameButton'),
 
-  playerTurnText: document.getElementById('sf-playerTurnText')!,
-  revealButton: document.getElementById('sf-revealButton')!,
+  playerTurnText: document.getElementById('sf-playerTurnText'),
+  revealButton: document.getElementById('sf-revealButton'),
 
-  roleDisplay: document.getElementById('sf-roleDisplay')!,
-  locationDisplay: document.getElementById('sf-locationDisplay')!,
-  nextPlayerButton: document.getElementById('sf-nextPlayerButton')!,
+  roleDisplay: document.getElementById('sf-roleDisplay'),
+  locationDisplay: document.getElementById('sf-locationDisplay'),
+  nextPlayerButton: document.getElementById('sf-nextPlayerButton'),
 
-  timeSelectButtons: document.getElementById('sf-timeSelectButtons')!,
-  timerDisplay: document.getElementById('sf-timerDisplay')!,
-  startTimerButton: document.getElementById('sf-startTimerButton') as HTMLButtonElement,
-  playAgainButton: document.getElementById('sf-playAgainButton')!,
+  timeSelectButtons: document.getElementById('sf-timeSelectButtons'),
+  timerDisplay: document.getElementById('sf-timerDisplay'),
+  startTimerButton: document.getElementById('sf-startTimerButton'),
+  playAgainButton: document.getElementById('sf-playAgainButton'),
 
   // 3. Methods
-  showScreen(screenId: 'setup' | 'assign' | 'reveal' | 'timer') {
+  showScreen(screenId) {
     this.setupScreen.classList.add('hidden');
     this.assignScreen.classList.add('hidden');
     this.revealScreen.classList.add('hidden');
@@ -155,7 +154,7 @@ const SpyfallGame = {
     else if (screenId === 'timer') this.timerScreen.classList.remove('hidden');
   },
 
-  formatTime(seconds: number): string {
+  formatTime(seconds) {
     const min = Math.floor(seconds / 60);
     const sec = seconds % 60;
     return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
@@ -175,7 +174,7 @@ const SpyfallGame = {
   startGame() {
     this.playerCount = parseInt(this.playerCountSelect.value);
     this.currentLocation = this.locationsDeck[Math.floor(Math.random() * this.locationsDeck.length)];
-    const rolesToAssign: string[] = [];
+    const rolesToAssign = [];
     const normalPlayerCount = this.playerCount - this.spyCount;
     const shuffledLocationRoles = shuffleArray([...this.currentLocation.roles]);
 
@@ -198,7 +197,7 @@ const SpyfallGame = {
       this.locationDisplay.innerText = "???";
     } else {
       this.roleDisplay.innerText = role;
-      this.locationDisplay.innerText = this.currentLocation!.name;
+      this.locationDisplay.innerText = this.currentLocation.name;
     }
     this.showScreen('reveal');
   },
@@ -217,13 +216,13 @@ const SpyfallGame = {
       this.playAgainButton.classList.add('hidden');
       document.querySelectorAll('#sf-timeSelectButtons button').forEach(btn => {
         btn.classList.remove('selected');
-        (btn as HTMLButtonElement).disabled = false;
+        btn.disabled = false;
       });
       this.showScreen('timer');
     }
   },
 
-  selectTime(minutes: number) {
+  selectTime(minutes) {
     if (this.timerInterval) clearInterval(this.timerInterval);
     this.timeRemaining = minutes * 60;
     this.timerDisplay.innerText = this.formatTime(this.timeRemaining);
@@ -231,7 +230,7 @@ const SpyfallGame = {
 
     document.querySelectorAll('#sf-timeSelectButtons button').forEach(btn => {
       btn.classList.remove('selected');
-      if (parseInt(btn.getAttribute('data-time-min')!) === minutes) {
+      if (parseInt(btn.getAttribute('data-time-min')) === minutes) {
         btn.classList.add('selected');
       }
     });
@@ -240,7 +239,7 @@ const SpyfallGame = {
   startTimer() {
     this.startTimerButton.disabled = true;
     document.querySelectorAll('#sf-timeSelectButtons button').forEach(btn => {
-      (btn as HTMLButtonElement).disabled = true;
+      btn.disabled = true;
     });
 
     this.timerInterval = window.setInterval(() => {
@@ -257,7 +256,7 @@ const SpyfallGame = {
     this.startTimerButton.classList.add('hidden');
     this.playAgainButton.classList.remove('hidden');
     document.querySelectorAll('#sf-timeSelectButtons button').forEach(btn => {
-      (btn as HTMLButtonElement).disabled = false;
+      btn.disabled = false;
     });
   },
 
@@ -268,7 +267,7 @@ const SpyfallGame = {
     this.currentPlayerIndex = 0;
     this.spyCount = 1; // รีเซ็ตค่าสปาย
     document.querySelectorAll('#sf-spyCountButtons button').forEach(btn => btn.classList.remove('selected'));
-    (document.querySelector('#sf-spyCountButtons button[data-spy-count="1"]') as HTMLElement).classList.add('selected');
+    document.querySelector('#sf-spyCountButtons button[data-spy-count="1"]').classList.add('selected');
     this.initializeSetup(); // สร้าง select ใหม่
     this.showScreen('setup'); // กลับไปหน้าตั้งค่าของตัวเอง
   },
@@ -282,18 +281,18 @@ const SpyfallGame = {
     this.playAgainButton.addEventListener('click', () => this.resetGame());
 
     this.spyCountButtons.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
+      const target = e.target;
       if (target.tagName === 'BUTTON') {
         this.spyCountButtons.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
         target.classList.add('selected');
-        this.spyCount = parseInt(target.getAttribute('data-spy-count')!);
+        this.spyCount = parseInt(target.getAttribute('data-spy-count'));
       }
     });
 
     this.timeSelectButtons.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
+      const target = e.target;
       if (target.tagName === 'BUTTON') {
-        const minutes = parseInt(target.getAttribute('data-time-min')!);
+        const minutes = parseInt(target.getAttribute('data-time-min'));
         this.selectTime(minutes);
       }
     });
@@ -308,18 +307,18 @@ const SpyfallGame = {
 // =============================================
 const App = {
   // 1. DOM Elements
-  hubScreen: document.getElementById('hubScreen')!,
-  werewolfContainer: document.getElementById('werewolfGameContainer')!,
-  spyfallContainer: document.getElementById('spyfallGameContainer')!,
+  hubScreen: document.getElementById('hubScreen'),
+  werewolfContainer: document.getElementById('werewolfGameContainer'),
+  spyfallContainer: document.getElementById('spyfallGameContainer'),
 
-  gotoWerewolfBtn: document.getElementById('gotoWerewolfBtn')!,
-  gotoSpyfallBtn: document.getElementById('gotoSpyfallBtn')!,
+  gotoWerewolfBtn: document.getElementById('gotoWerewolfBtn'),
+  gotoSpyfallBtn: document.getElementById('gotoSpyfallBtn'),
 
-  wwBackBtn: document.getElementById('ww-backToHubBtn')!,
-  sfBackBtn: document.getElementById('sf-backToHubBtn')!,
+  wwBackBtn: document.getElementById('ww-backToHubBtn'),
+  sfBackBtn: document.getElementById('sf-backToHubBtn'),
 
   // 2. Methods
-  showScreen(screenId: 'hub' | 'werewolf' | 'spyfall') {
+  showScreen(screenId) {
     this.hubScreen.classList.add('hidden');
     this.werewolfContainer.classList.add('hidden');
     this.spyfallContainer.classList.add('hidden');
@@ -328,10 +327,10 @@ const App = {
       this.hubScreen.classList.remove('hidden');
     } else if (screenId === 'werewolf') {
       this.werewolfContainer.classList.remove('hidden');
-      WerewolfGame.resetGame(); // รีเซ็ตเกม WW ทุกครั้งที่เข้ามา
+      WerewolfGame.resetGame();
     } else if (screenId === 'spyfall') {
       this.spyfallContainer.classList.remove('hidden');
-      SpyfallGame.resetGame(); // รีเซ็ตเกม SF ทุกครั้งที่เข้ามา
+      SpyfallGame.resetGame();
     }
   },
 
