@@ -1,220 +1,206 @@
-/* ============================================= */
-/* 1. สไตล์หลัก (ใช้ร่วมกัน) */
-/* ============================================= */
+/* =============================================
+   1. Theme Variables & Reset
+   ============================================= */
+   :root {
+    --primary-color: #6a0dad;   /* ม่วงเข้ม */
+    --primary-light: #9c27b0;   /* ม่วงสว่าง */
+    --secondary-color: #ffd700; /* ทอง */
+    --bg-color: #1a1a1d;        /* พื้นหลังมืด */
+    --surface-color: #2d2d35;   /* พื้นหลังการ์ด/ปุ่ม */
+    --text-color: #f0f0f0;
+    --danger-color: #ff4444;
+    --success-color: #00c851;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif ,th;
-    background-color: #2c3e50;
-    color: #ecf0f1;
+    font-family: 'Kanit', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    margin: 0;
-    text-align: center; 
+    overflow-x: hidden;
 }
 
 .container {
     width: 100%;
-    max-width: 400px;
-    padding: 1rem;
-    box-sizing: border-box;
-  
-
-}
-/* 🚀 เพิ่ม Media Query เพื่อรองรับ iPad หรือหน้าจอขนาดใหญ่ขึ้น */
-@media (min-width: 600px) {
-    .container {
-        /* ขยาย max-width สำหรับหน้าจอขนาดใหญ่ */
-        max-width: 600px; 
-    }
-}
-
-
-/* * FIX 1: เพิ่ม .container h1
- * บังคับให้ h1 (ทุกตัว) ที่อยู่ใน .container อยู่ตรงกลาง
- * เพื่อแก้ปัญหา h1 ในหน้า Hub ชิดซ้าย
- */
-.container h1 {
+    max-width: 600px;
+    padding: 20px;
     text-align: center;
-}
-
-/*
- * คลาสสำหรับควบคุม "หน้าจอ"
- * เราใช้ flex column เพื่อให้จัดเรียงของจากบนลงล่าง
- */
-.screen {
-    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
     align-items: center;
 }
 
-.hidden {
-    display: none; /* คลาสหลักสำหรับซ่อนทุกอย่าง */
+.screen { width: 100%; display: none; animation: fadeIn 0.3s; }
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+.hidden { display: none !important; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-hr {
-    border: 1px solid #7f8c8d;
-    width: 100%;
-}
+/* =============================================
+   2. Typography & Common UI
+   ============================================= */
+h1.main-title { font-size: 3rem; color: var(--text-color); margin-bottom: 10px; line-height: 1; }
+h1.main-title span { color: var(--secondary-color); }
+h1.game-title { color: var(--secondary-color); margin-bottom: 20px; }
+p.instruction { color: #ccc; margin-bottom: 15px; }
 
-/* ============================================= */
-/* 2. สไตล์องค์ประกอบ (ปุ่ม, input, ฯลฯ) */
-/* ============================================= */
-
-/* สไตล์ปุ่ม (ทั่วไป) */
-button {
-    font-size: 1.1rem;
-    padding: 0.7rem 1rem;
+/* Buttons */
+.btn {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    color: white;
     border: none;
-    border-radius: 8px;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 50px;
     cursor: pointer;
-    background-color: #7f8c8d;
-    color: white;
-    transition: background-color 0.2s;
-}
-
-button:hover {
-    background-color: #95a5a6;
-}
-
-/* ปุ่มหลัก (สีน้ำเงิน) */
-button.btn-primary {
-    font-size: 1.3rem;
-    font-weight: bold;
-    background-color: #3498db;
-}
-button.btn-primary:hover {
-    background-color: #2980b9;
-}
-button:disabled {
-    background-color: #596162;
-    cursor: not-allowed;
-}
-
-/*
- * ปุ่มกลับหน้าแรก (จัดกลาง)
- * ใช้ align-self: center; เพื่อจัดกลางใน flex-column
- */
-.btn-back {
-    align-self: center; /* <-- จัดกลาง (อันนี้ถูกต้องแล้วจากรอบก่อน) */
-    width: fit-content;
-    background-color: transparent;
-    color: #95a5a6;
-    padding: 0.2rem 0.5rem;
-    font-size: 0.9rem;
-}
-.btn-back:hover {
-    color: white;
-    background-color: #34495e;
-}
-
-/* สไตล์ Input & Select */
-textarea, 
-select {
     width: 100%;
-    box-sizing: border-box;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border-radius: 4px;
-    border: 1px solid #7f8c8d;
-    background-color: #34495e;
-    color: white;
-    /* บังคับให้ text-align เป็น 'left' (แก้ผลจาก body) */
-    text-align: left; 
+    max-width: 300px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    font-family: 'Kanit', sans-serif;
+    margin-top: 10px;
 }
-textarea::placeholder {
-    text-align: left;
+.btn:hover { transform: scale(1.02); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-danger { background: linear-gradient(45deg, #c0392b, #e74c3c); }
+
+.btn-back {
+    background: none; border: none; color: #888;
+    font-size: 1rem; cursor: pointer; align-self: flex-start;
+    margin-bottom: 10px;
 }
-select option {
-     text-align: left;
+.btn-back:hover { color: var(--secondary-color); }
+
+.btn-small {
+    background: #444; color: white; border: none;
+    padding: 8px 15px; border-radius: 20px; cursor: pointer;
+    font-family: 'Kanit', sans-serif;
 }
 
-
-/* สไตล์หน้าแสดงผล (ใช้ร่วมกัน) */
-.role-display {
-    font-size: 2.5rem;
-    color: #e67e22;
-    margin: 0;
-}
-.location-display {
-    font-size: 1.8rem;
-    color: #f1c40f;
-    margin: 0;
+/* Inputs */
+textarea, select {
+    width: 100%; padding: 10px; border-radius: 10px;
+    border: 1px solid #555; background: var(--surface-color);
+    color: white; font-family: 'Kanit', sans-serif; font-size: 1rem;
+    margin-bottom: 10px;
 }
 
-/* ============================================= */
-/* 3. สไตล์หน้า HUB */
-/* ============================================= */
-#hubScreen {
-    background-color: #1a1a2e; /* สีพื้นหลัง Hub */
-}
-
-.game-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-
-    /*
-     * FIX 2: เพิ่ม align-items: center;
-     * เพื่อจัดกลางปุ่ม (game-card) ในแนวนอน
-     * เพราะ .game-menu เป็น flex-direction: column
-     */
-    align-items: center; 
+/* =============================================
+   3. Hub Screen (Grid Layout)
+   ============================================= */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-top: 30px;
 }
 
 .game-card {
-    display: block;
-    padding: 2rem;
-    border-radius: 12px;
-    text-decoration: none;
-    color: white;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.2s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    background-color: #34495e;
-    
-    /* * เราสามารถกำหนดความกว้างให้ปุ่มได้ด้วย
-     * เพื่อให้มันดูดีขึ้น (ไม่บังคับ)
-     */
-     width: 90%; /* หรือ 100% ก็ได้ครับ */
-}
-.game-card:hover {
-    transform: scale(1.05);
-}
-.game-card h2 {
-    font-size: 2rem;
-    margin: 0 0 0.5rem 0;
-}
-.game-card p {
-    font-size: 1rem;
-    margin: 0;
-}
-
-
-/* ============================================= */
-/* 4. สไตล์เฉพาะ SPYFALL (WW ไม่ต้องมีเพิ่ม) */
-/* ============================================= */
-.button-group {
+    background: var(--surface-color);
+    border: 2px solid transparent;
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    transition: 0.3s;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-.button-group button.selected {
-    background-color: #e67e22; /* สีส้มเมื่อถูกเลือก */
-}
-.button-group.large button {
-    font-size: 1.2rem;
-    padding: 0.8rem;
-    flex-basis: 45%;
+    aspect-ratio: 1 / 1; /* ทำให้เป็นสี่เหลี่ยมจัตุรัส */
 }
 
-#sf-timerDisplay {
-    font-size: 4rem;
+.game-card:hover {
+    border-color: var(--secondary-color);
+    transform: translateY(-5px);
+    background: #363640;
+}
+
+.game-card .icon { font-size: 3rem; margin-bottom: 10px; }
+.game-card h2 { font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 5px; }
+.game-card p { font-size: 0.8rem; color: #aaa; }
+
+/* =============================================
+   4. Gameplay Components
+   ============================================= */
+.card-reveal {
+    background: var(--surface-color);
+    padding: 30px; border-radius: 15px;
+    border: 1px solid var(--secondary-color);
+    width: 100%; margin: 20px 0;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+}
+.role-text { font-size: 2.5rem; color: var(--secondary-color); font-weight: bold; line-height: 1.2; }
+.role-text-small { font-size: 1.8rem; color: var(--secondary-color); }
+.location-text { font-size: 2rem; color: #00c851; font-weight: bold; }
+.role-desc { color: #ccc; margin-top: 10px; }
+
+.divider { border: 0; border-top: 1px solid #444; width: 100%; margin: 20px 0; }
+.divider-small { border: 0; border-top: 1px solid #444; width: 50%; margin: 10px auto; }
+
+.timer-big { font-size: 4rem; font-weight: bold; color: var(--secondary-color); font-variant-numeric: tabular-nums; margin: 10px 0; }
+
+/* Button Groups */
+.button-group { display: flex; justify-content: center; gap: 10px; margin: 10px 0; flex-wrap: wrap; width: 100%; }
+.button-group-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+
+.btn-choice {
+    background: #444; color: white; border: 1px solid #555;
+    padding: 10px; border-radius: 10px; cursor: pointer; flex: 1;
+}
+.btn-choice:hover { background: #555; }
+.btn-choice.selected { background: var(--secondary-color); color: black; border-color: var(--secondary-color); font-weight: bold; }
+.btn-choice:disabled { opacity: 0.5; cursor: default; }
+
+/* Table for Werewords */
+.word-table-container { width: 100%; margin: 10px 0; }
+table { width: 100%; border-collapse: collapse; background: #222; border-radius: 10px; overflow: hidden; }
+th, td { padding: 12px; text-align: center; border-bottom: 1px solid #444; }
+th { background: var(--primary-color); color: white; }
+tr:last-child td { border-bottom: none; }
+
+/* Modal */
+.modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); overflow-y: auto; }
+.modal-content { background-color: #222; margin: 10% auto; padding: 20px; border: 1px solid var(--secondary-color); width: 90%; max-width: 500px; border-radius: 10px; text-align: left; }
+.close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+.role-list-item { border-bottom: 1px solid #444; padding: 10px 0; font-size: 0.9rem; }
+.role-name { color: var(--secondary-color); font-weight: bold; }
+/* =============================================
+   Werewords Specific Styles (Add on)
+   ============================================= */
+
+/* บังคับตารางให้ใหญ่สะใจ */
+table.big-table th, 
+table.big-table td {
+    font-size: 1.6rem !important; /* ตัวหนังสือใหญ่ */
+    padding: 20px !important;     /* ช่องไฟกว้าง */
+    text-align: left;
+}
+table.big-table .dice-col {
     font-weight: bold;
-    color: #1abc9c;
-    margin: 0.5rem 0;
+    color: var(--secondary-color);
+    text-align: center;
+    font-size: 2rem !important; /* เลขลูกเต๋าใหญ่พิเศษ */
+}
+
+/* ตกแต่งรายการบทบาทในหน้าแรก */
+.role-list-item {
+    border-bottom: 1px solid #444;
+    padding: 12px 0;
+    font-size: 1rem;
+    line-height: 1.4;
+    text-align: left;
+}
+.role-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--secondary-color);
 }
