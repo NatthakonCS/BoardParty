@@ -4,114 +4,227 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>AtomCity</title>
+	<title>Board Game Hub</title>
+	<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="./style.css">
-  <link rel="icon" href="./hero.png">
 </head>
 
 <body>
- <div id="hubScreen" class="screen">
-    
-    <div class="container"> 
-        
-        <h1>เลือกเกมที่ต้องการเล่น</h1> 
-        
-        <div class="game-menu"> 
-            
-            <button class="game-card" id="gotoWerewolfBtn">
-                <h2>Werewolf</h2>
-                <p>แววูฟ</p>
-            </button>
-            
-            <button class="game-card" id="gotoSpyfallBtn">
-                <h2>Spyfall</h2>
-                <p>สปายฟอล</p>
-            </button>
 
-        </div>
-    </div> 
-  </div>
+	<div id="hubScreen" class="screen active">
+		<div class="container">
+			<h1 class="main-title">BOARD GAME<br><span>ATOMCITY</span></h1>
+			<p style="color: #aaa;">เลือกเกมที่คุณต้องการเล่น</p>
 
-	
+			<div class="game-grid">
+				<div class="game-card" id="gotoWerewolfBtn">
+					<div class="icon">🐺</div>
+					<h2>Werewolf</h2>
+					<p>เกมล่าหมาป่า</p>
+				</div>
+
+				<div class="game-card" id="gotoSpyfallBtn">
+					<div class="icon">🕵️</div>
+					<h2>Spyfall</h2>
+					<p>เนียนให้รอด</p>
+				</div>
+
+				<div class="game-card" id="gotoWerewordsBtn">
+					<div class="icon">🔮</div>
+					<h2>Werewords</h2>
+					<p>ทายคำ</p>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<div id="werewolfGameContainer" class="screen hidden">
 		<div class="container">
-			<button class="btn-back" id="ww-backToHubBtn"> &lt; กลับหน้าแรก</button>
+			<button class="btn-back" id="ww-backToHubBtn">&lt; กลับหน้าแรก</button>
 
-			<div id="ww-setupScreen" class="screen">
-				<h1>Werewolf ดิวะ</h1>
+			<div id="ww-setupScreen">
+				<h1 class="game-title">Werewolf</h1>
 				<p>ใส่บทบาททั้งหมด (1 บรรทัด ต่อ 1 คน):</p>
-				<textarea id="ww-rolesTextarea" rows="10" placeholder="เช่น...&#10;Werewolf&#10;Seer&#10;Villager"></textarea>
-				<p id="ww-playerCount">จำนวนผู้เล่น: 0</p>
-				<button id="ww-startButton" class="btn-primary">เริ่มเกม</button>
+				<textarea id="ww-rolesTextarea" rows="8" placeholder="ตัวอย่าง:&#10;Werewolf&#10;Seer&#10;Villager"></textarea>
+				<p id="ww-playerCount" style="color:var(--secondary-color);">จำนวนผู้เล่น: 0</p>
+				<button id="ww-startButton" class="btn">เริ่มเกม</button>
 			</div>
 
-			<div id="ww-assignScreen" class="screen hidden">
-				<h1 id="ww-playerTurnText"></h1>
-				<p>กรุณาซ่อนหน้าจอจากคนอื่น</p>
-				<button id="ww-revealButton" class="btn-primary">กดเพื่อดูบทบาทของคุณ</button>
+			<div id="ww-assignScreen" class="hidden">
+				<h2 id="ww-playerTurnText"></h2>
+				<p class="instruction">กรุณาซ่อนหน้าจอจากคนอื่น</p>
+				<button id="ww-revealButton" class="btn">กดเพื่อดูบทบาท</button>
 			</div>
 
-			<div id="ww-revealScreen" class="screen hidden">
+			<div id="ww-revealScreen" class="hidden">
 				<p>บทบาทของคุณคือ...</p>
-				<h1 id="ww-roleDisplay" class="role-display"></h1>
-				<hr>
-				<h2>ส่งโทรศัพท์ให้คนถัดไป</h2>
-				<button id="ww-nextPlayerButton">ต่อไป</button>
+				<div class="card-reveal">
+					<h1 id="ww-roleDisplay" class="role-text"></h1>
+				</div>
+				<hr class="divider">
+				<p>จำบทบาทแล้วส่งต่อ</p>
+				<button id="ww-nextPlayerButton" class="btn">ส่งให้คนต่อไป ➡️</button>
 			</div>
 		</div>
 	</div>
 
 	<div id="spyfallGameContainer" class="screen hidden">
 		<div class="container">
-			<button class="btn-back" id="sf-backToHubBtn"> &lt; กลับหน้าแรก</button>
+			<button class="btn-back" id="sf-backToHubBtn">&lt; กลับหน้าแรก</button>
 
-			<div id="sf-setupScreen" class="screen">
-				<h1>ตั้งค่าเกม Spyfall</h1>
-				<label for="sf-playerCountSelect">จำนวนผู้เล่น (รวมสปาย):</label>
-				<select id="sf-playerCountSelect"></select>
-				<label>จำนวนสปาย:</label>
-				<div id="sf-spyCountButtons" class="button-group">
-					<button data-spy-count="1" class="selected">1 คน</button>
-					<button data-spy-count="2">2 คน</button>
+			<div id="sf-setupScreen">
+				<h1 class="game-title">Spyfall</h1>
+
+				<div class="setup-group">
+					<label>จำนวนผู้เล่น (รวมสปาย)</label>
+					<select id="sf-playerCountSelect" class="styled-select"></select>
 				</div>
-				<button id="sf-startGameButton" class="btn-primary">เริ่มเกม</button>
-			</div>
 
-			<div id="sf-assignScreen" class="screen hidden">
-				<h1 id="sf-playerTurnText"></h1>
-				<p>กรุณาซ่อนหน้าจอจากคนอื่น</p>
-				<button id="sf-revealButton" class="btn-primary">กดเพื่อดูบทบาทของคุณ</button>
-			</div>
-
-			<div id="sf-revealScreen" class="screen hidden">
-				<p>บทบาทของคุณคือ...</p>
-				<h2 id="sf-roleDisplay" class="role-display"></h2>
-				<p>สถานที่คือ...</p>
-				<h1 id="sf-locationDisplay" class="location-display"></h1>
-				<hr>
-				<h2>ส่งโทรศัพท์ให้คนถัดไป</h2>
-				<button id="sf-nextPlayerButton">ต่อไป</button>
-			</div>
-
-			<div id="sf-timerScreen" class="screen hidden">
-				<h1>ทุกคนได้บทบาทแล้ว</h1>
-				<p>เลือกเวลาสำหรับรอบนี้:</p>
-				<div id="sf-timeSelectButtons" class="button-group large">
-					<button data-time-min="6">6:00</button>
-					<button data-time-min="8">8:00</button>
-					<button data-time-min="10">10:00</button>
-					<button data-time-min="15">15:00</button>
+				<div class="setup-group">
+					<label>จำนวนสปาย</label>
+					<div id="sf-spyCountButtons" class="button-group">
+						<button data-spy-count="1" class="btn-choice selected">1 คน</button>
+						<button data-spy-count="2" class="btn-choice">2 คน</button>
+					</div>
 				</div>
-				<h1 id="sf-timerDisplay">00:00</h1>
-				<button id="sf-startTimerButton" class="btn-primary" disabled>เริ่มจับเวลา</button>
-				<button id="sf-playAgainButton" class="hidden">เล่นเกมนี้อีกครั้ง</button>
+
+				<button id="sf-startGameButton" class="btn">เริ่มเกม</button>
+			</div>
+
+			<div id="sf-assignScreen" class="hidden">
+				<h2 id="sf-playerTurnText"></h2>
+				<p class="instruction">กรุณาซ่อนหน้าจอจากคนอื่น</p>
+				<button id="sf-revealButton" class="btn">กดเพื่อดูบทบาท</button>
+			</div>
+
+			<div id="sf-revealScreen" class="hidden">
+				<div class="card-reveal">
+					<p>บทบาทของคุณคือ...</p>
+					<h2 id="sf-roleDisplay" class="role-text-small"></h2>
+					<hr class="divider-small">
+					<p>สถานที่คือ...</p>
+					<h1 id="sf-locationDisplay" class="location-text"></h1>
+				</div>
+				<button id="sf-nextPlayerButton" class="btn">ส่งให้คนต่อไป ➡️</button>
+			</div>
+
+			<div id="sf-timerScreen" class="hidden">
+				<h2 style="color:var(--secondary-color);">เริ่มจับเวลา!</h2>
+				<div id="sf-timerDisplay" class="timer-big">00:00</div>
+
+				<div id="sf-timeSelectButtons" class="button-group">
+					<button data-time-min="6" class="btn-choice">6 น.</button>
+					<button data-time-min="8" class="btn-choice">8 น.</button>
+					<button data-time-min="10" class="btn-choice">10 น.</button>
+				</div>
+
+				<br>
+				<button id="sf-startTimerButton" class="btn" disabled>เริ่มจับเวลา</button>
+				<button id="sf-playAgainButton" class="btn btn-danger hidden">เล่นอีกครั้ง</button>
 			</div>
 		</div>
 	</div>
-	
-	<script src="./main.js"></script>	
-	
+
+	    <div id="werewordsGameContainer" class="screen hidden">
+        <div class="container">
+            
+            <div id="wd-homeScreen">
+                <button class="btn-back" id="wd-backToHubBtn">&lt; กลับหน้าเลือกเกม</button>
+                
+                <h1 class="game-title" style="font-size: 3rem; margin-bottom: 0;">WEREWORDS</h1>
+                <h2 style="color: #b39ddb; margin-bottom: 15px;">Insider ver หมาป่า</h2>
+                <p>ค้นหาคำตอบ หรือ ตามหาคนทรยศ!</p>
+                
+                <div style="text-align: left; width: 100%; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px;">
+                    <h3 style="color:var(--secondary-color);">แนะนำบทบาท:</h3>
+                    <div id="wd-role-intro-list-home"></div> 
+                    </div>
+
+                <button class="btn btn-secondary btn-small" onclick="WerewordsGame.openRules()">📜 กฎกติกาเพิ่มเติม</button>
+                <div style="height: 20px;"></div>
+                <button class="btn" onclick="WerewordsGame.goToSetup()">🎮 เริ่มเกม</button>
+            </div>
+
+            <div id="wd-setupScreen" class="hidden">
+                <button class="btn-back" onclick="WerewordsGame.goBackToHome()">&lt; ย้อนกลับ</button>
+                <h1 class="game-title">ตั้งค่าผู้เล่น</h1>
+                <p>เลือกจำนวนผู้เล่น</p>
+                <div class="button-group-grid">
+                    <button class="btn-choice" onclick="WerewordsGame.setupGame(7)">7 คน</button>
+                    <button class="btn-choice" onclick="WerewordsGame.setupGame(8)">8 คน</button>
+                    <button class="btn-choice" onclick="WerewordsGame.setupGame(9)">9 คน</button>
+                    <button class="btn-choice" onclick="WerewordsGame.setupGame(10)">10 คน</button>
+                </div>
+            </div>
+
+            <div id="wd-revealScreen" class="hidden">
+                <h2>สุ่มบทบาท</h2>
+                <p>ส่งอุปกรณ์ให้ผู้เล่นคนที่ <span id="wd-player-number" style="color:var(--secondary-color); font-size:1.5rem;">1</span></p>
+                
+                <div id="wd-card-area" class="card-reveal" style="display: none;">
+                    <div id="wd-role-title" class="role-text">Role</div>
+                    <div id="wd-role-desc" class="role-desc">...</div>
+                </div>
+
+                <button id="wd-btn-show-role" class="btn" onclick="WerewordsGame.showRole()">👁️ ดูบทบาท</button>
+                <button id="wd-btn-next-player" class="btn" onclick="WerewordsGame.nextPlayer()" style="display:none;">ส่งให้คนต่อไป ➡️</button>
+                <button id="wd-btn-start-play" class="btn" onclick="WerewordsGame.startGamePlay()" style="display:none;">🚀 เริ่มเล่นเกม</button>
+            </div>
+
+            <div id="wd-gameScreen" class="hidden">
+                <h1 class="game-title">การเล่น</h1>
+
+                <button class="btn btn-secondary" onclick="WerewordsGame.toggleTable()" style="margin-bottom: 15px;">
+                    🎲 เปิด/ปิด ตารางคำศัพท์
+                </button>
+                
+                <div id="wd-word-table-area" class="word-table-container" style="display:none;">
+                    <table id="wd-word-table" class="big-table">
+                        <thead>
+                            <tr>
+                                <th width="30%">เต๋า</th>
+                                <th>คำศัพท์</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wd-word-table-body"></tbody>
+                    </table>
+                    <button class="btn btn-small" onclick="WerewordsGame.refreshWords()" style="margin-top:10px;">🔄 สุ่มชุดใหม่</button>
+                </div>
+
+                <hr class="divider">
+                <h3>⏱️ จับเวลา</h3>
+                <div class="timer-big" id="wd-timer">00:00</div>
+                <div class="button-group">
+                    <button class="btn-choice" onclick="WerewordsGame.startTimer(4)">4 นาที</button>
+                    <button class="btn-choice" onclick="WerewordsGame.startTimer(5)">5 นาที</button>
+                </div>
+                <button class="btn btn-danger" onclick="WerewordsGame.stopTimer()" style="margin-top:10px;">หยุดเวลา</button>
+                <div style="margin-top: 40px;">
+                    <button class="btn btn-danger" onclick="WerewordsGame.resetGame()">🏁 จบเกม (กลับหน้าหลัก)</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="wd-ruleModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="WerewordsGame.closeRules()">&times;</span>
+                <h2 style="color: var(--secondary-color); text-align: center;">กติกาการแพ้ชนะ</h2>
+                
+                <h3>กรณีที่ 1: ทีมชาวบ้านทายถูก ✅</h3>
+                <p>หมาป่าต้องหา <strong>Seer (ตัวจริง)</strong> ให้เจอ ถ้าชี้ผิด ชาวบ้านชนะ</p>
+                <hr style="border-color:#444; margin:10px 0;">
+                
+                <h3>กรณีที่ 2: ทายไม่ทันเวลา ❌</h3>
+                <p>ชาวบ้านต้องชี้หา <strong>หมาป่า</strong> ให้เจออย่างน้อย 1 ตัว (ไม่นับ Minion) ถ้าชี้ผิด หมาป่าชนะ</p>
+                <hr style="border-color:#444; margin:10px 0;">
+
+                <h3>บทเสริม: คนบ้า 🤪</h3>
+                <p>ขวางชาวบ้านให้ทายคำไม่สำเร็จ คนบ้าชนะคนเดียว</p>
+            </div>
+        </div>
+    </div>
+
+	<script src="./main.js"></script>
 </body>
 
 </html>
