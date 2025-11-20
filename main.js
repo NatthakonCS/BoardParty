@@ -1,359 +1,504 @@
-// =============================================
-//  HELPER FUNCTIONS (ใช้ร่วมกัน)
-// =============================================
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
+/* =============================================
+   SHARED HELPER FUNCTIONS
+   ============================================= */
+   function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
-// =============================================
-//  GAME 1: WEREWOLF
-// =============================================
+/* =============================================
+   GAME 1: WEREWOLF LOGIC
+   ============================================= */
 const WerewolfGame = {
-  // 1. State
-  roles: [],
-  currentPlayerIndex: 0,
+    roles: [],
+    currentPlayerIndex: 0,
 
-  // 2. DOM Elements
-  container: document.getElementById('werewolfGameContainer'),
-  setupScreen: document.getElementById('ww-setupScreen'),
-  assignScreen: document.getElementById('ww-assignScreen'),
-  revealScreen: document.getElementById('ww-revealScreen'),
+    // Elements
+    setupScreen: document.getElementById('ww-setupScreen'),
+    assignScreen: document.getElementById('ww-assignScreen'),
+    revealScreen: document.getElementById('ww-revealScreen'),
+    rolesTextarea: document.getElementById('ww-rolesTextarea'),
+    playerCountText: document.getElementById('ww-playerCount'),
+    playerTurnText: document.getElementById('ww-playerTurnText'),
+    roleDisplay: document.getElementById('ww-roleDisplay'),
 
-  rolesTextarea: document.getElementById('ww-rolesTextarea'),
-  playerCountText: document.getElementById('ww-playerCount'),
-  startButton: document.getElementById('ww-startButton'),
+    init() {
+        document.getElementById('ww-startButton').addEventListener('click', () => this.startGame());
+        document.getElementById('ww-revealButton').addEventListener('click', () => this.revealRole());
+        document.getElementById('ww-nextPlayerButton').addEventListener('click', () => this.nextPlayer());
+        this.rolesTextarea.addEventListener('input', () => this.updatePlayerCount());
+    },
 
-  playerTurnText: document.getElementById('ww-playerTurnText'),
-  revealButton: document.getElementById('ww-revealButton'),
+    resetGame() {
+        this.setupScreen.classList.remove('hidden');
+        this.assignScreen.classList.add('hidden');
+        this.revealScreen.classList.add('hidden');
+        this.rolesTextarea.value = '';
+        this.playerCountText.innerText = 'จำนวนผู้เล่น: 0';
+        this.roles = [];
+        this.currentPlayerIndex = 0;
+    },
 
-  roleDisplay: document.getElementById('ww-roleDisplay'),
-  nextPlayerButton: document.getElementById('ww-nextPlayerButton'),
+    updatePlayerCount() {
+        const rolesInput = this.rolesTextarea.value;
+        const allRoles = rolesInput.split('\n').filter(role => role.trim() !== '');
+        this.playerCountText.innerText = `จำนวนผู้เล่น: ${allRoles.length}`;
+    },
 
-  // 3. Methods
-  showScreen(screenId) {
-    this.setupScreen.classList.add('hidden');
-    this.assignScreen.classList.add('hidden');
-    this.revealScreen.classList.add('hidden');
+    startGame() {
+        const rolesInput = this.rolesTextarea.value;
+        const allRoles = rolesInput.split('\n').filter(role => role.trim() !== '');
+        if (allRoles.length < 2) { alert("ใส่บทบาทอย่างน้อย 2 คนครับ"); return; }
+        
+        this.roles = shuffleArray(allRoles);
+        this.currentPlayerIndex = 0;
+        this.playerTurnText.innerText = `ผู้เล่นคนที่ ${this.currentPlayerIndex + 1}`;
+        this.setupScreen.classList.add('hidden');
+        this.assignScreen.classList.remove('hidden');
+    },
 
-    if (screenId === 'setup') this.setupScreen.classList.remove('hidden');
-    else if (screenId === 'assign') this.assignScreen.classList.remove('hidden');
-    else if (screenId === 'reveal') this.revealScreen.classList.remove('hidden');
-  },
+    revealRole() {
+        this.roleDisplay.innerText = this.roles[this.currentPlayerIndex];
+        this.assignScreen.classList.add('hidden');
+        this.revealScreen.classList.remove('hidden');
+    },
 
-  startGame() {
-    const rolesInput = this.rolesTextarea.value;
-    const allRoles = rolesInput.split('\n').filter(role => role.trim() !== '');
-
-    if (allRoles.length < 2) {
-      alert("กรุณาใส่บทบาทอย่างน้อย 2 คน!");
-      return;
+    nextPlayer() {
+        this.currentPlayerIndex++;
+        if (this.currentPlayerIndex < this.roles.length) {
+            this.playerTurnText.innerText = `ผู้เล่นคนที่ ${this.currentPlayerIndex + 1}`;
+            this.revealScreen.classList.add('hidden');
+            this.assignScreen.classList.remove('hidden');
+        } else {
+            alert("ทุกคนรู้บทบาทแล้ว เริ่มเกมได้!");
+            this.resetGame();
+            App.showScreen('hub');
+        }
     }
-    this.roles = shuffleArray(allRoles);
-    this.currentPlayerIndex = 0;
-    this.playerTurnText.innerText = `ผู้เล่นคนที่ ${this.currentPlayerIndex + 1}`;
-    this.showScreen('assign');
-  },
-
-  revealRole() {
-    this.roleDisplay.innerText = this.roles[this.currentPlayerIndex];
-    this.showScreen('reveal');
-  },
-
-  nextPlayer() {
-    this.currentPlayerIndex++;
-    if (this.currentPlayerIndex < this.roles.length) {
-      this.playerTurnText.innerText = `ผู้เล่นคนที่ ${this.currentPlayerIndex + 1}`;
-      this.showScreen('assign');
-    } else {
-      alert("ทุกคนได้รับบทบาทครบแล้ว! เริ่มเกมได้");
-      this.resetGame();
-    }
-  },
-
-  updatePlayerCount() {
-    const rolesInput = this.rolesTextarea.value;
-    const allRoles = rolesInput.split('\n').filter(role => role.trim() !== '');
-    this.playerCountText.innerText = `จำนวนผู้เล่น: ${allRoles.length}`;
-  },
-
-  resetGame() {
-    this.rolesTextarea.value = '';
-    this.playerCountText.innerText = 'จำนวนผู้เล่น: 0';
-    this.roles = [];
-    this.currentPlayerIndex = 0;
-    this.showScreen('setup');
-  },
-
-  // 4. Initialize (เชื่อมปุ่ม)
-  init() {
-    this.startButton.addEventListener('click', () => this.startGame());
-    this.revealButton.addEventListener('click', () => this.revealRole());
-    this.nextPlayerButton.addEventListener('click', () => this.nextPlayer());
-    this.rolesTextarea.addEventListener('input', () => this.updatePlayerCount());
-  }
 };
 
-// =============================================
-//  GAME 2: SPYFALL
-// =============================================
+/* =============================================
+   GAME 2: SPYFALL LOGIC
+   ============================================= */
 const SpyfallGame = {
-  // 1. State
-  locationsDeck: [
-    { name: "สถานีอวกาศ", roles: ["วิศวกร", "นักบินอวกาศ", "นักวิทยาศาสตร์", "เอเลี่ยนแฝงตัว", "ผู้บังคับการ"] },
-    { name: "เรือดำน้ำ", roles: ["กัปตัน", "วิศวกรโซนาร์", "ช่างเครื่อง", "กุ๊ก", "นักชีววิทยาทางทะเล"] },
-    { name: "คณะละครสัตว์", roles: ["ตัวตลก", "นักกายกรรม", "ผู้ควบคุมสิงโต", "นักมายากล", "ผู้ชม"] },
-    // ... (เพิ่มอีก 17 สถานที่จากโค้ดเดิม) ...
-    { name: "ธนาคาร", roles: ["ผู้จัดการ", "พนักงานเคาน์เตอร์", "ยาม", "ลูกค้า", "โจร"] }
-  ],
+    locationsDeck: [
+        { name: "สถานีอวกาศ", roles: ["วิศวกร", "นักบิน", "นักวิทย์", "เอเลี่ยน", "ผู้การ"] },
+        { name: "เรือดำน้ำ", roles: ["กัปตัน", "โซนาร์", "ช่าง", "กุ๊ก", "ต้นหน"] },
+        { name: "คณะละครสัตว์", roles: ["ตัวตลก", "นักกายกรรม", "ควาญช้าง", "มายากล", "คนดู"] },
+        { name: "ธนาคาร", roles: ["ผู้จัดการ", "พนักงาน", "รปภ.", "ลูกค้า", "โจร"] },
+        { name: "โรงพยาบาล", roles: ["หมอ", "พยาบาล", "คนไข้", "ภารโรง", "เภสัช"] },
+        { name: "โรงแรม", roles: ["พนักงานต้อนรับ", "แม่บ้าน", "ลูกค้า", "บาร์เทนเดอร์", "ยาม"] },
+        { name: "เครื่องบิน", roles: ["แอร์", "สจ๊วต", "กัปตัน", "ผู้โดยสาร", "ช่างเครื่อง"] }
+    ],
+    playerCount: 3,
+    spyCount: 1,
+    timeRemaining: 0,
+    timerInterval: null,
+    allRoles: [],
+    currentLocation: null,
+    currentPlayerIndex: 0,
 
-  playerCount: 3,
-  spyCount: 1,
-  currentLocation: null,
-  allRoles: [],
-  currentPlayerIndex: 0,
-  timeRemaining: 0,
-  timerInterval: undefined,
+    // Elements
+    setupScreen: document.getElementById('sf-setupScreen'),
+    assignScreen: document.getElementById('sf-assignScreen'),
+    revealScreen: document.getElementById('sf-revealScreen'),
+    timerScreen: document.getElementById('sf-timerScreen'),
+    playerCountSelect: document.getElementById('sf-playerCountSelect'),
+    playerTurnText: document.getElementById('sf-playerTurnText'),
+    roleDisplay: document.getElementById('sf-roleDisplay'),
+    locationDisplay: document.getElementById('sf-locationDisplay'),
+    timerDisplay: document.getElementById('sf-timerDisplay'),
+    startTimerButton: document.getElementById('sf-startTimerButton'),
+    spyBtns: document.querySelectorAll('#sf-spyCountButtons button'),
+    timeBtns: document.querySelectorAll('#sf-timeSelectButtons button'),
 
-  // 2. DOM Elements
-  container: document.getElementById('spyfallGameContainer'),
-  setupScreen: document.getElementById('sf-setupScreen'),
-  assignScreen: document.getElementById('sf-assignScreen'),
-  revealScreen: document.getElementById('sf-revealScreen'),
-  timerScreen: document.getElementById('sf-timerScreen'),
+    init() {
+        // Setup Select Options
+        for(let i=3; i<=12; i++) {
+            let opt = document.createElement('option');
+            opt.value = i; opt.innerText = i + " คน";
+            this.playerCountSelect.appendChild(opt);
+        }
 
-  playerCountSelect: document.getElementById('sf-playerCountSelect'),
-  spyCountButtons: document.getElementById('sf-spyCountButtons'),
-  startGameButton: document.getElementById('sf-startGameButton'),
+        document.getElementById('sf-startGameButton').addEventListener('click', () => this.startGame());
+        document.getElementById('sf-revealButton').addEventListener('click', () => this.revealRole());
+        document.getElementById('sf-nextPlayerButton').addEventListener('click', () => this.nextPlayer());
+        document.getElementById('sf-startTimerButton').addEventListener('click', () => this.startTimer());
+        document.getElementById('sf-playAgainButton').addEventListener('click', () => this.resetGame());
 
-  playerTurnText: document.getElementById('sf-playerTurnText'),
-  revealButton: document.getElementById('sf-revealButton'),
+        // Spy Count Toggle
+        this.spyBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.spyBtns.forEach(b => b.classList.remove('selected'));
+                e.target.classList.add('selected');
+                this.spyCount = parseInt(e.target.dataset.spyCount);
+            });
+        });
 
-  roleDisplay: document.getElementById('sf-roleDisplay'),
-  locationDisplay: document.getElementById('sf-locationDisplay'),
-  nextPlayerButton: document.getElementById('sf-nextPlayerButton'),
+        // Time Select
+        this.timeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.timeBtns.forEach(b => b.classList.remove('selected'));
+                e.target.classList.add('selected');
+                this.timeRemaining = parseInt(e.target.dataset.timeMin) * 60;
+                this.updateTimerDisplay();
+                this.startTimerButton.disabled = false;
+            });
+        });
+    },
 
-  timeSelectButtons: document.getElementById('sf-timeSelectButtons'),
-  timerDisplay: document.getElementById('sf-timerDisplay'),
-  startTimerButton: document.getElementById('sf-startTimerButton'),
-  playAgainButton: document.getElementById('sf-playAgainButton'),
+    resetGame() {
+        clearInterval(this.timerInterval);
+        this.setupScreen.classList.remove('hidden');
+        this.assignScreen.classList.add('hidden');
+        this.revealScreen.classList.add('hidden');
+        this.timerScreen.classList.add('hidden');
+        document.getElementById('sf-playAgainButton').classList.add('hidden');
+        this.startTimerButton.classList.remove('hidden');
+        this.startTimerButton.disabled = true;
+        this.timerDisplay.style.color = "var(--secondary-color)";
+        this.timerDisplay.innerText = "00:00";
+        this.timeBtns.forEach(b => { b.classList.remove('selected'); b.disabled = false; });
+    },
 
-  // 3. Methods
-  showScreen(screenId) {
-    this.setupScreen.classList.add('hidden');
-    this.assignScreen.classList.add('hidden');
-    this.revealScreen.classList.add('hidden');
-    this.timerScreen.classList.add('hidden');
+    startGame() {
+        this.playerCount = parseInt(this.playerCountSelect.value);
+        this.currentLocation = this.locationsDeck[Math.floor(Math.random() * this.locationsDeck.length)];
+        
+        let roles = [];
+        let availableRoles = [...this.currentLocation.roles];
+        shuffleArray(availableRoles);
 
-    if (screenId === 'setup') this.setupScreen.classList.remove('hidden');
-    else if (screenId === 'assign') this.assignScreen.classList.remove('hidden');
-    else if (screenId === 'reveal') this.revealScreen.classList.remove('hidden');
-    else if (screenId === 'timer') this.timerScreen.classList.remove('hidden');
-  },
+        // Fill roles
+        let normalCount = this.playerCount - this.spyCount;
+        for(let i=0; i<normalCount; i++) roles.push(availableRoles[i % availableRoles.length]);
+        for(let i=0; i<this.spyCount; i++) roles.push("Spy");
 
-  formatTime(seconds) {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-  },
+        this.allRoles = shuffleArray(roles);
+        this.currentPlayerIndex = 0;
+        this.playerTurnText.innerText = `ผู้เล่นคนที่ ${this.currentPlayerIndex + 1}`;
+        
+        this.setupScreen.classList.add('hidden');
+        this.assignScreen.classList.remove('hidden');
+    },
 
-  initializeSetup() {
-    this.playerCountSelect.innerHTML = '';
-    for (let i = 3; i <= 20; i++) {
-      const option = document.createElement('option');
-      option.value = i.toString();
-      option.innerText = `${i} คน`;
-      this.playerCountSelect.appendChild(option);
+    revealRole() {
+        let role = this.allRoles[this.currentPlayerIndex];
+        if (role === "Spy") {
+            this.roleDisplay.innerText = "Spy";
+            this.locationDisplay.innerText = "???";
+            this.roleDisplay.style.color = "var(--danger-color)";
+        } else {
+            this.roleDisplay.innerText = role;
+            this.locationDisplay.innerText = this.currentLocation.name;
+            this.roleDisplay.style.color = "var(--secondary-color)";
+        }
+        this.assignScreen.classList.add('hidden');
+        this.revealScreen.classList.remove('hidden');
+    },
+
+    nextPlayer() {
+        this.currentPlayerIndex++;
+        if (this.currentPlayerIndex < this.playerCount) {
+            this.playerTurnText.innerText = `ผู้เล่นคนที่ ${this.currentPlayerIndex + 1}`;
+            this.revealScreen.classList.add('hidden');
+            this.assignScreen.classList.remove('hidden');
+        } else {
+            this.revealScreen.classList.add('hidden');
+            this.timerScreen.classList.remove('hidden');
+        }
+    },
+
+    startTimer() {
+        this.startTimerButton.disabled = true;
+        this.timeBtns.forEach(b => b.disabled = true);
+        this.timerInterval = setInterval(() => {
+            this.timeRemaining--;
+            this.updateTimerDisplay();
+            if(this.timeRemaining <= 0) {
+                clearInterval(this.timerInterval);
+                this.timerDisplay.innerText = "หมดเวลา!";
+                this.timerDisplay.style.color = "var(--danger-color)";
+                document.getElementById('sf-playAgainButton').classList.remove('hidden');
+                this.startTimerButton.classList.add('hidden');
+            }
+        }, 1000);
+    },
+
+    updateTimerDisplay() {
+        let m = Math.floor(this.timeRemaining / 60);
+        let s = this.timeRemaining % 60;
+        this.timerDisplay.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
-    this.playerCountSelect.value = "3";
-  },
-
-  startGame() {
-    this.playerCount = parseInt(this.playerCountSelect.value);
-    this.currentLocation = this.locationsDeck[Math.floor(Math.random() * this.locationsDeck.length)];
-    const rolesToAssign = [];
-    const normalPlayerCount = this.playerCount - this.spyCount;
-    const shuffledLocationRoles = shuffleArray([...this.currentLocation.roles]);
-
-    for (let i = 0; i < normalPlayerCount; i++) {
-      rolesToAssign.push(shuffledLocationRoles[i % shuffledLocationRoles.length]);
-    }
-    for (let i = 0; i < this.spyCount; i++) {
-      rolesToAssign.push("Spy");
-    }
-    this.allRoles = shuffleArray(rolesToAssign);
-    this.currentPlayerIndex = 0;
-    this.playerTurnText.innerText = `ผู้เล่นคนที่ ${this.currentPlayerIndex + 1}`;
-    this.showScreen('assign');
-  },
-
-  revealRole() {
-    const role = this.allRoles[this.currentPlayerIndex];
-    if (role === "Spy") {
-      this.roleDisplay.innerText = "Spy";
-      this.locationDisplay.innerText = "???";
-    } else {
-      this.roleDisplay.innerText = role;
-      this.locationDisplay.innerText = this.currentLocation.name;
-    }
-    this.showScreen('reveal');
-  },
-
-  nextPlayer() {
-    this.currentPlayerIndex++;
-    if (this.currentPlayerIndex < this.playerCount) {
-      this.playerTurnText.innerText = `ผู้เล่นคนที่ ${this.currentPlayerIndex + 1}`;
-      this.showScreen('assign');
-    } else {
-      // ครบทุกคนแล้ว -> ไปหน้าจับเวลา
-      this.timerDisplay.innerText = "00:00";
-      this.timerDisplay.style.color = "#1abc9c";
-      this.startTimerButton.disabled = true;
-      this.startTimerButton.classList.remove('hidden');
-      this.playAgainButton.classList.add('hidden');
-      document.querySelectorAll('#sf-timeSelectButtons button').forEach(btn => {
-        btn.classList.remove('selected');
-        btn.disabled = false;
-      });
-      this.showScreen('timer');
-    }
-  },
-
-  selectTime(minutes) {
-    if (this.timerInterval) clearInterval(this.timerInterval);
-    this.timeRemaining = minutes * 60;
-    this.timerDisplay.innerText = this.formatTime(this.timeRemaining);
-    this.startTimerButton.disabled = false;
-
-    document.querySelectorAll('#sf-timeSelectButtons button').forEach(btn => {
-      btn.classList.remove('selected');
-      if (parseInt(btn.getAttribute('data-time-min')) === minutes) {
-        btn.classList.add('selected');
-      }
-    });
-  },
-
-  startTimer() {
-    this.startTimerButton.disabled = true;
-    document.querySelectorAll('#sf-timeSelectButtons button').forEach(btn => {
-      btn.disabled = true;
-    });
-
-    this.timerInterval = window.setInterval(() => {
-      this.timeRemaining--;
-      this.timerDisplay.innerText = this.formatTime(this.timeRemaining);
-      if (this.timeRemaining <= 0) this.endGame();
-    }, 1000);
-  },
-
-  endGame() {
-    if (this.timerInterval) clearInterval(this.timerInterval);
-    this.timerDisplay.innerText = "TIME'S UP!";
-    this.timerDisplay.style.color = "#e74c3c";
-    this.startTimerButton.classList.add('hidden');
-    this.playAgainButton.classList.remove('hidden');
-    document.querySelectorAll('#sf-timeSelectButtons button').forEach(btn => {
-      btn.disabled = false;
-    });
-  },
-
-  resetGame() {
-    if (this.timerInterval) clearInterval(this.timerInterval);
-    this.currentLocation = null;
-    this.allRoles = [];
-    this.currentPlayerIndex = 0;
-    this.spyCount = 1; // รีเซ็ตค่าสปาย
-    document.querySelectorAll('#sf-spyCountButtons button').forEach(btn => btn.classList.remove('selected'));
-    document.querySelector('#sf-spyCountButtons button[data-spy-count="1"]').classList.add('selected');
-    this.initializeSetup(); // สร้าง select ใหม่
-    this.showScreen('setup'); // กลับไปหน้าตั้งค่าของตัวเอง
-  },
-
-  // 4. Initialize (เชื่อมปุ่ม)
-  init() {
-    this.initializeSetup(); // สร้างตัวเลือก 3-20
-    this.startGameButton.addEventListener('click', () => this.startGame());
-    this.revealButton.addEventListener('click', () => this.revealRole());
-    this.nextPlayerButton.addEventListener('click', () => this.nextPlayer());
-    this.playAgainButton.addEventListener('click', () => this.resetGame());
-
-    this.spyCountButtons.addEventListener('click', (e) => {
-      const target = e.target;
-      if (target.tagName === 'BUTTON') {
-        this.spyCountButtons.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
-        target.classList.add('selected');
-        this.spyCount = parseInt(target.getAttribute('data-spy-count'));
-      }
-    });
-
-    this.timeSelectButtons.addEventListener('click', (e) => {
-      const target = e.target;
-      if (target.tagName === 'BUTTON') {
-        const minutes = parseInt(target.getAttribute('data-time-min'));
-        this.selectTime(minutes);
-      }
-    });
-
-    this.startTimerButton.addEventListener('click', () => this.startTimer());
-  }
 };
 
+/* =============================================
+   GAME 3: WEREWORDS LOGIC (UPDATED)
+   ============================================= */
+/* =============================================
+   GAME 3: WEREWORDS LOGIC (แก้ไข: แสดงบทบาทหน้าแรกให้ชัวร์ขึ้น)
+   ============================================= */
+const WerewordsGame = {
+    rolesInfo: {
+        "Mayor": { desc: "นายก: เลือกคำ ตอบคำถาม (ใช่/ไม่/อาจจะ) *อาจมีบทแฝง*", team: "ชาวบ้าน" },
+        "Werewolf": { desc: "หมาป่า: รู้คำลับ ต้องทำให้ชาวบ้านทายผิด", team: "หมาป่า" },
+        "Seer": { desc: "ผู้หยั่งรู้: รู้คำลับ ต้องช่วยเนียนๆ", team: "ชาวบ้าน" },
+        "Major": { desc: "Major (ชาวบ้าน): ไม่รู้คำ ช่วยกันถาม", team: "ชาวบ้าน" },
+        "Minion": { desc: "สมุนปีศาจ: ไม่รู้คำ รู้ตัวหมาป่า", team: "หมาป่า" },
+        "Beholder": { desc: "ผู้เฝ้ามอง: รู้ตัว Seer ไม่รู้คำ", team: "ชาวบ้าน" },
+        "Apprentice Seer": { desc: "ศิษย์: รู้หมวดหมู่/ตัวอักษรแรก", team: "ชาวบ้าน" },
+        "Hunchback": { desc: "คนบ้า: ขวางไม่ให้ทายถูก เพื่อชนะคนเดียว", team: "คนบ้า" }
+    },
+    wordCategories: [
+        ["แอปเปิ้ล", "ภูเขา", "รองเท้า", "โทรศัพท์", "ประเทศไทย", "ซุปเปอร์แมน"],
+        ["โรงเรียน", "ช้าง", "นาฬิกา", "แม่น้ำ", "พิซซ่า", "โดราเอมอน"],
+        ["เครื่องบิน", "ทะเล", "หนังสือ", "ไมโครเวฟ", "ญี่ปุ่น", "สไปเดอร์แมน"],
+        ["คอมพิวเตอร์", "ป่าไม้", "แว่นตา", "ตู้เย็น", "โรงพยาบาล", "แฮร์รี่ พอตเตอร์"],
+        ["รองเท้าแตะ", "ดาวอังคาร", "จักรยาน", "หมวก", "สถานีตำรวจ", "ลูฟี่"],
+        ["ไอศกรีม", "ถ้ำ", "ปากกา", "พัดลม", "สวนสัตว์", "นารูโตะ"],
+        ["เค้ก", "น้ำตก", "กุญแจ", "ทีวี", "ตลาดนัด", "เอลซ่า"],
+        ["สุนัข", "ทะเลทราย", "ร่ม", "หม้อหุงข้าว", "วัด", "โคนัน"],
+        ["แมว", "เกาะ", "แก้วน้ำ", "เครื่องซักผ้า", "สนามบิน", "มิกกี้เมาส์"]
+    ],
+    currentRoles: [],
+    currentPlayerIndex: 0,
+    playerCount: 0,
+    timerInterval: null,
 
-// =============================================
-//  APP CONTROLLER (ตัวควบคุมหลัก)
-// =============================================
+    // Elements
+    homeScreen: document.getElementById('wd-homeScreen'),
+    setupScreen: document.getElementById('wd-setupScreen'),
+    revealScreen: document.getElementById('wd-revealScreen'),
+    gameScreen: document.getElementById('wd-gameScreen'),
+    ruleModal: document.getElementById('wd-ruleModal'),
+
+    init() {
+        // เรียกใช้ฟังก์ชันสร้างรายการครั้งแรก
+        this.renderHomeRoles();
+    },
+
+    // [ใหม่] ฟังก์ชันสำหรับสร้างรายการบทบาทหน้าแรกโดยเฉพาะ
+    renderHomeRoles() {
+        const list = document.getElementById('wd-role-intro-list-home');
+        // ถ้าหา element เจอ และข้างในยังว่างเปล่า ให้สร้างรายการ
+        if(list && list.innerHTML.trim() === "") {
+            let htmlContent = "";
+            for (const [role, info] of Object.entries(this.rolesInfo)) {
+                // กำหนดสีให้สวยงามตามทีม
+                let colorStyle = "color: #eee;"; // สีขาวหม่น
+                if (info.team === "หมาป่า") colorStyle = "color: #ff6b6b;"; // แดงอ่อน
+                if (info.team === "คนบ้า") colorStyle = "color: #feca57;"; // ส้มอ่อน
+
+                htmlContent += `
+                    <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 0; text-align: left;">
+                        <span style="${colorStyle} font-weight: bold; font-size: 1.1rem;">${role}</span>
+                        <div style="color: #aaa; font-size: 0.9rem; margin-top: 4px;">${info.desc}</div>
+                    </div>`;
+            }
+            list.innerHTML = htmlContent;
+        }
+    },
+
+    // Navigation
+    goToSetup() {
+        this.homeScreen.classList.add('hidden');
+        this.setupScreen.classList.remove('hidden');
+    },
+
+    goBackToHome() {
+        this.setupScreen.classList.add('hidden');
+        this.homeScreen.classList.remove('hidden');
+    },
+
+    setupGame(count) {
+        this.playerCount = count;
+        this.currentRoles = [];
+        if (count === 7) this.currentRoles = ["Mayor", "Werewolf", "Werewolf", "Seer", "Major", "Major", "Minion"];
+        else if (count === 8) this.currentRoles = ["Mayor", "Werewolf", "Werewolf", "Seer", "Major", "Major", "Minion", "Beholder"];
+        else if (count === 9) this.currentRoles = ["Mayor", "Werewolf", "Werewolf", "Seer", "Major", "Major", "Minion", "Beholder", "Apprentice Seer"];
+        else if (count === 10) this.currentRoles = ["Mayor", "Werewolf", "Werewolf", "Seer", "Major", "Major", "Minion", "Beholder", "Apprentice Seer", "Hunchback"];
+        
+        shuffleArray(this.currentRoles);
+        this.currentPlayerIndex = 0;
+        
+        this.setupScreen.classList.add('hidden');
+        this.revealScreen.classList.remove('hidden');
+        this.resetRevealScreen();
+    },
+
+    resetRevealScreen() {
+        document.getElementById('wd-player-number').innerText = "1";
+        document.getElementById('wd-card-area').style.display = "none";
+        document.getElementById('wd-btn-show-role').style.display = "inline-block";
+        document.getElementById('wd-btn-next-player').style.display = "none";
+        document.getElementById('wd-btn-start-play').style.display = "none";
+    },
+
+    showRole() {
+        const roleName = this.currentRoles[this.currentPlayerIndex];
+        const roleData = this.rolesInfo[roleName];
+        
+        document.getElementById('wd-role-title').innerText = roleName;
+        document.getElementById('wd-role-desc').innerText = roleData.desc;
+        
+        const titleEl = document.getElementById('wd-role-title');
+        if(roleData.team === "หมาป่า") titleEl.style.color = "var(--danger-color)";
+        else if(roleData.team === "คนบ้า") titleEl.style.color = "orange";
+        else titleEl.style.color = "var(--secondary-color)";
+
+        document.getElementById('wd-card-area').style.display = "block";
+        document.getElementById('wd-btn-show-role').style.display = "none";
+
+        if (this.currentPlayerIndex < this.playerCount - 1) {
+            document.getElementById('wd-btn-next-player').style.display = "inline-block";
+        } else {
+            document.getElementById('wd-btn-start-play').style.display = "inline-block";
+        }
+    },
+
+    nextPlayer() {
+        this.currentPlayerIndex++;
+        document.getElementById('wd-player-number').innerText = this.currentPlayerIndex + 1;
+        document.getElementById('wd-card-area').style.display = "none";
+        document.getElementById('wd-btn-show-role').style.display = "inline-block";
+        document.getElementById('wd-btn-next-player').style.display = "none";
+    },
+
+    startGamePlay() {
+        this.revealScreen.classList.add('hidden');
+        this.gameScreen.classList.remove('hidden');
+        this.refreshWords();
+        document.getElementById('wd-word-table-area').style.display = "none";
+        document.getElementById('wd-timer').innerText = "00:00";
+    },
+
+    toggleTable() {
+        const area = document.getElementById('wd-word-table-area');
+        area.style.display = (area.style.display === "none") ? "block" : "none";
+    },
+
+    refreshWords() {
+        const randomSet = this.wordCategories[Math.floor(Math.random() * this.wordCategories.length)];
+        const tbody = document.getElementById('wd-word-table-body');
+        tbody.innerHTML = "";
+        randomSet.forEach((word, index) => {
+            tbody.innerHTML += `<tr>
+                <td class="dice-col">${index + 1}</td>
+                <td>${word}</td>
+            </tr>`;
+        });
+    },
+
+    startTimer(min) {
+        this.stopTimer();
+        let time = min * 60;
+        const display = document.getElementById('wd-timer');
+        const update = () => {
+            let m = Math.floor(time/60);
+            let s = time%60;
+            display.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        };
+        update();
+        this.timerInterval = setInterval(() => {
+            time--;
+            update();
+            if(time <= 0) {
+                this.stopTimer();
+                alert("หมดเวลา!");
+            }
+        }, 1000);
+    },
+
+    stopTimer() {
+        if(this.timerInterval) clearInterval(this.timerInterval);
+    },
+
+    resetGame() {
+        this.stopTimer();
+        this.gameScreen.classList.add('hidden');
+        this.setupScreen.classList.add('hidden');
+        this.homeScreen.classList.remove('hidden');
+        App.showScreen('hub');
+    },
+
+    openRules() { this.ruleModal.style.display = "block"; },
+    closeRules() { this.ruleModal.style.display = "none"; }
+};
+
+/* =============================================
+   APP CONTROLLER (MAIN)
+   ============================================= */
 const App = {
-  // 1. DOM Elements
-  hubScreen: document.getElementById('hubScreen'),
-  werewolfContainer: document.getElementById('werewolfGameContainer'),
-  spyfallContainer: document.getElementById('spyfallGameContainer'),
+    hubScreen: document.getElementById('hubScreen'),
+    wwContainer: document.getElementById('werewolfGameContainer'),
+    sfContainer: document.getElementById('spyfallGameContainer'),
+    wdContainer: document.getElementById('werewordsGameContainer'),
 
-  gotoWerewolfBtn: document.getElementById('gotoWerewolfBtn'),
-  gotoSpyfallBtn: document.getElementById('gotoSpyfallBtn'),
+    showScreen(screenName) {
+        // 1. Hide All Containers
+        const allScreens = [this.hubScreen, this.wwContainer, this.sfContainer, this.wdContainer];
+        allScreens.forEach(screen => {
+            screen.classList.remove('active');
+            screen.classList.add('hidden');
+        });
 
-  wwBackBtn: document.getElementById('ww-backToHubBtn'),
-  sfBackBtn: document.getElementById('sf-backToHubBtn'),
+        // 2. Show Selected Container
+        if (screenName === 'hub') {
+            this.hubScreen.classList.remove('hidden');
+            this.hubScreen.classList.add('active');
+        } 
+        else if (screenName === 'werewolf') {
+            WerewolfGame.resetGame();
+            this.wwContainer.classList.remove('hidden');
+            this.wwContainer.classList.add('active');
+        }
+        else if (screenName === 'spyfall') {
+            SpyfallGame.resetGame();
+            this.sfContainer.classList.remove('hidden');
+            this.sfContainer.classList.add('active');
+        }
+                else if (screenName === 'werewords') {
+            this.wdContainer.classList.remove('hidden');
+            this.wdContainer.classList.add('active');
+            
+            // ตั้งค่าให้แสดงหน้า Home ก่อน
+            WerewordsGame.homeScreen.classList.remove('hidden');
+            WerewordsGame.setupScreen.classList.add('hidden');
+            WerewordsGame.gameScreen.classList.add('hidden');
+            
+            // [สำคัญ] บังคับให้สร้างรายการบทบาททุกครั้งที่กดเข้ามาหน้านี้ เพื่อแก้ปัญหาจอดำ
+            WerewordsGame.renderHomeRoles(); 
+        }
 
-  // 2. Methods
-  showScreen(screenId) {
-    this.hubScreen.classList.add('hidden');
-    this.werewolfContainer.classList.add('hidden');
-    this.spyfallContainer.classList.add('hidden');
+    },
 
-    if (screenId === 'hub') {
-      this.hubScreen.classList.remove('hidden');
-    } else if (screenId === 'werewolf') {
-      this.werewolfContainer.classList.remove('hidden');
-      WerewolfGame.resetGame();
-    } else if (screenId === 'spyfall') {
-      this.spyfallContainer.classList.remove('hidden');
-      SpyfallGame.resetGame();
+    init() {
+        // Navigation Buttons (Hub)
+        document.getElementById('gotoWerewolfBtn').addEventListener('click', () => this.showScreen('werewolf'));
+        document.getElementById('gotoSpyfallBtn').addEventListener('click', () => this.showScreen('spyfall'));
+        document.getElementById('gotoWerewordsBtn').addEventListener('click', () => this.showScreen('werewords'));
+        
+        // Back Buttons
+        document.getElementById('ww-backToHubBtn').addEventListener('click', () => this.showScreen('hub'));
+        document.getElementById('sf-backToHubBtn').addEventListener('click', () => this.showScreen('hub'));
+        document.getElementById('wd-backToHubBtn').addEventListener('click', () => this.showScreen('hub'));
+
+        // Init Sub-Games
+        WerewolfGame.init(); // รันเพื่อสร้าง List หน้าแรก
+        SpyfallGame.init();
+        
+        // Close Modal Event (Werewords Rules)
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('wd-ruleModal')) {
+                WerewordsGame.closeRules();
+            }
+        }
     }
-  },
-
-  // 3. Initialize
-  init() {
-    // เชื่อมปุ่มหน้า Hub
-    this.gotoWerewolfBtn.addEventListener('click', () => this.showScreen('werewolf'));
-    this.gotoSpyfallBtn.addEventListener('click', () => this.showScreen('spyfall'));
-
-    // เชื่อมปุ่มกลับ
-    this.wwBackBtn.addEventListener('click', () => this.showScreen('hub'));
-    this.sfBackBtn.addEventListener('click', () => this.showScreen('hub'));
-
-    // เริ่มต้นเกมย่อยทั้งสอง (เพื่อให้ Event Listeners พร้อมทำงาน)
-    WerewolfGame.init();
-    SpyfallGame.init();
-
-    // เริ่มต้นแอป
-    this.showScreen('hub');
-  }
 };
 
-// =============================================
-//  START THE APP
-// =============================================
+// Start App
 App.init();
+
